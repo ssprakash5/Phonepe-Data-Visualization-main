@@ -2,16 +2,16 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
-df_indian_states = pd.read_csv("C:/Users/Admin/Downloads/statedf1.csv")
+df_indian_states = pd.read_csv("/content/statedf1.csv")
 # Read the District vs. Amount CSV file
-district_data = pd.read_csv("C:/Users/Admin/Downloads/namedf.csv")
+district_data = pd.read_csv("/content/namedf.csv")
 
 # Read additional CSV files
-data_district = pd.read_csv("C:/Users/Admin/Downloads/namedf.csv")
-data_state = pd.read_csv("C:/Users/Admin/Downloads/statedf1.csv")
+data_district = pd.read_csv("/content/namedf.csv")
+data_state = pd.read_csv("/content/statedf1.csv")
 
 # Streamlit App
-st.title('Phonepe Data Visualization: Indian States and Districts vs. Amount')
+st.title('Phonepe Visualization: Indian States and Districts vs. Amount')
 
 # Indian States vs. Amount visualization
 st.subheader('Indian States vs. Amount')
@@ -115,7 +115,7 @@ fig_state.update_geos(
 st.plotly_chart(fig_state)
 
 #Read the CSV file
-district_data = pd.read_csv("D:\phonepe_csv_map_transaction\converted_data_map_transaction.csv")
+district_data = pd.read_csv("/content/converted_data_map_transaction.csv")
 
 # Streamlit App Title
 st.title("District Visualization")
@@ -139,7 +139,7 @@ fig_selected_state = px.bar(
 st.plotly_chart(fig_selected_state)
 
 # Example 4: Name vs Amount Bar Plot
-df1=pd.read_csv("D:/phonepe_csv_output1/converted_data-aggregated_transaction.csv")
+df1=pd.read_csv("/content/converted_data-aggregated_transaction.csv")
 
 # Streamlit App Title
 st.title("Name vs Amount Visualization")
@@ -163,7 +163,7 @@ plt.legend(['Amount'], fontsize='small')
 # Show the plot in Streamlit app
 st.pyplot(fig_name_amount)
 
-df2=pd.read_csv("D:\phonepe_csv_aggregated_user\converted_data_agg_user.csv")
+df2=pd.read_csv("/content/converted_data_agg_user.csv")
 
 # Streamlit App Title
 st.title("Brand vs User Aggregation Visualization")
@@ -208,7 +208,7 @@ plt.title('State vs Registered User')
 # Show the plot in Streamlit app
 st.pyplot(fig_state_registered_user)
 
-df4=pd.read_csv("D:\phonepe_csv_map_user\converted_data map user.csv")
+df4=pd.read_csv("/content/converted_data map user.csv")
 
 # Streamlit App Title
 st.title("App Opens vs State Visualization")
@@ -226,7 +226,7 @@ plt.title('App Opens vs State')
 # Show the plot in Streamlit app
 st.pyplot(fig_app_opens_state)
 
-df5=pd.read_csv("D:\phonepe_csv_top_transaction1\converted_data_top_transaction.csv")
+df5 = pd.read_csv("/content/converted_data_top_transaction.csv")
 
 # Streamlit App Title
 st.title("Top 10 Transaction Amounts by Entity Name")
@@ -234,7 +234,11 @@ st.title("Top 10 Transaction Amounts by Entity Name")
 # Group by entityName and sum the amounts
 district = df5.groupby('entityName').sum()
 district.reset_index(inplace=True)
-district = district.drop(['year', 'state', 'type', 'responseTimestamp'], axis=1)
+
+# Check if 'state' and 'type' columns exist before dropping them
+columns_to_drop = ['year', 'state', 'type', 'responseTimestamp']
+columns_to_drop = [col for col in columns_to_drop if col in district.columns]
+district = district.drop(columns_to_drop, axis=1)
 
 # Select only rows with numeric entityName (assuming pincode)
 pincode_rows = district[district['entityName'].str.match(r'^\d+$')]
@@ -244,26 +248,42 @@ top_10_rows = pincode_rows.nlargest(10, 'amount')
 st.subheader("Top 10 Transaction Amounts by Entity Name")
 st.table(top_10_rows)
 
-df3=pd.read_csv("D:\phonepe_csv_map_transaction\converted_data_map_transaction.csv")
+import pandas as pd
+import streamlit as st
+
+df3 = pd.read_csv("/content/converted_data_top_transaction.csv")
+
+# Print the column names to check the actual column names
+print("Column Names:", df3.columns)
+
 # Streamlit App Title
 st.title("Top 10 Transaction Amounts by District Name")
 
-# Group by name and sum the amounts
-district = df3.groupby(['name']).sum()
-district.reset_index(inplace=True)
+# Check if 'entityName' column exists in the DataFrame
+if 'entityName' in df3.columns:
+    # Group by entityName and sum the amounts
+    district = df3.groupby(['entityName']).sum()
+    district.reset_index(inplace=True)
 
-# Check if 'level_0' and 'index' columns exist before dropping them
-if 'level_0' in district.columns:
-    district.drop(['level_0'], axis=1, inplace=True)
+    # Check if the columns exist before dropping them
+    columns_to_drop = ['year', 'state', 'type', 'responseTimestamp']
+    columns_to_drop = [col for col in columns_to_drop if col in district.columns]
+    district.drop(columns_to_drop, axis=1, inplace=True)
 
-if 'index' in district.columns:
-    district.drop(['index'], axis=1, inplace=True)
+    # Check if 'level_0' and 'index' columns exist before dropping them
+    if 'level_0' in district.columns:
+        district.drop(['level_0'], axis=1, inplace=True)
 
-# Display the top 10 rows in Streamlit app
-st.subheader("Top 10 Transaction Amounts by District Name")
-top_10_districts = district.nlargest(10, 'amount')
-top_10_districts.drop(['year', 'state', 'type', 'responseTimestamp'], axis=1, inplace=True)
-st.table(top_10_districts)
+    if 'index' in district.columns:
+        district.drop(['index'], axis=1, inplace=True)
+
+    # Display the top 10 rows in Streamlit app
+    st.subheader("Top 10 Transaction Amounts by District Name")
+    top_10_districts = district.nlargest(10, 'amount')
+    st.table(top_10_districts)
+else:
+    st.error("Column 'entityName' not found in the DataFrame.")
+
 
 import streamlit as st
 import pandas as pd
@@ -275,7 +295,7 @@ import seaborn as sns
 # Additional sections or information can be added as per your requirements.
 
 # Example 11: Total Amount by State for Each Year in a Streamlit App
-df3 = pd.read_csv("D:/phonepe_csv_map_transaction/converted_data_map_transaction.csv")
+df3 = pd.read_csv("/content/converted_data_map_transaction.csv")
 
 # Streamlit App Title
 st.title("Total Amount by State for Each Year")
@@ -303,5 +323,3 @@ for year in years:
 
     # Show the plot for each year in the Streamlit app
     st.pyplot(plt)
-
-
