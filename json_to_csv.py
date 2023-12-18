@@ -6,7 +6,7 @@ import json
 base_dir = r"D:/phonepe data/data/aggregated/transaction/country/india/state"
 
 # Specify the output directory for CSV files on the D drive
-output_dir = r"D:/phonepe_csv_output1"  # Change this path to the desired output directory on the D drive
+output_dir = r"D:/phonepe_csv_output1" 
 
 # Create an empty list to store the converted data
 converted_data = []
